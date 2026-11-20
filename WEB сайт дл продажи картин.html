@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Палитра — Галерея авторских картин</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f0d0b;
+    --bg-2:#1a1613;
+    --cream:#f4ece0;
+    --gold:#d4af37;
+    --gold-soft:#b8935a;
+    --wine:#7a1f2b;
+    --emerald:#1e5f56;
+    --text:#e8e0d2;
+    --muted:#9a8f7f;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    overflow-x:hidden;
+    line-height:1.6;
+  }
+  h1,h2,h3,h4{font-family:'Playfair Display',serif;font-weight:700;letter-spacing:.5px}
+
+  /* ===== Навигация ===== */
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    padding:20px 60px;
+    display:flex;justify-content:space-between;align-items:center;
+    background:rgba(15,13,11,.7);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid rgba(212,175,55,.15);
+    transition:padding .3s;
+  }
+  .logo{
+    font-family:'Playfair Display',serif;
+    font-size:28px;font-weight:900;
+    background:linear-gradient(135deg,var(--gold),var(--cream));
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+    letter-spacing:2px;
+  }
+  nav ul{display:flex;gap:40px;list-style:none}
+  nav a{
+    color:var(--text);text-decoration:none;font-size:14px;
+    text-transform:uppercase;letter-spacing:1.5px;
+    position:relative;transition:color .3s;
+  }
+  nav a::after{
+    content:'';position:absolute;bottom:-6px;left:0;
+    width:0;height:1px;background:var(--gold);
+    transition:width .3s;
+  }
+  nav a:hover{color:var(--gold)}
+  nav a:hover::after{width:100%}
+  .cart-btn{
+    background:transparent;border:1px solid var(--gold);
+    color:var(--gold);padding:10px 20px;cursor:pointer;
+    font-size:13px;letter-spacing:1px;text-transform:uppercase;
+    transition:all .3s;position:relative;
+  }
+  .cart-btn:hover{background:var(--gold);color:var(--bg)}
+  .cart-count{
+    position:absolute;top:-8px;right:-8px;
+    background:var(--wine);color:#fff;
+    width:22px;height:22px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:600;
+  }
+
+  /* ===== Hero ===== */
+  .hero{
+    min-height:100vh;
+    display:flex;align-items:center;
+    padding:120px 60px 60px;
+    position:relative;overflow:hidden;
+    background:
+      radial-gradient(ellipse at 20% 30%,rgba(122,31,43,.3),transparent 50%),
+      radial-gradient(ellipse at 80% 70%,rgba(30,95,86,.25),transparent 50%),
+      radial-gradient(ellipse at 50% 50%,rgba(212,175,55,.1),transparent 60%),
+      var(--bg);
+  }
+  .hero::before{
+    content:'';position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(212,175,55,.03) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(212,175,55,.03) 1px,transparent 1px);
+    background-size:60px 60px;
+    pointer-events:none;
+  }
+  .hero-content{max-width:700px;position:relative;z-index:2}
+  .hero-tag{
+    display:inline-block;color:var(--gold);
+    letter-spacing:4px;font-size:12px;
+    text-transform:uppercase;margin-bottom:20px;
+    padding:8px 16px;border:1px solid rgba(212,175,55,.4);
+  }
+  .hero h1{
+    font-size:clamp(48px,7vw,96px);
+    line-height:1.05;margin-bottom:30px;
+  }
+  .hero h1 span{
+    font-style:italic;
+    background:linear-gradient(135deg,var(--gold),#e8c872,var(--gold-soft));
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  .hero p{
+    font-size:18px;color:var(--muted);
+    margin-bottom:40px;max-width:500px;
+  }
+  .hero-buttons{display:flex;gap:20px;flex-wrap:wrap}
+  .btn-primary{
+    background:linear-gradient(135deg,var(--gold),var(--gold-soft));
+    color:var(--bg);padding:16px 36px;border:none;
+    font-size:14px;letter-spacing:2px;text-transform:uppercase;
+    cursor:pointer;font-weight:600;
+    transition:transform .3s,box-shadow .3s;
+  }
+  .btn-primary:hover{
+    transform:translateY(-3px);
+    box-shadow:0 10px 30px rgba(212,175,55,.4);
+  }
+  .btn-ghost{
+    background:transparent;color:var(--cream);
+    padding:16px 36px;border:1px solid var(--cream);
+    font-size:14px;letter-spacing:2px;text-transform:uppercase;
+    cursor:pointer;transition:all .3s;
+  }
+  .btn-ghost:hover{background:var(--cream);color:var(--bg)}
+
+  .hero-image{
+    position:absolute;right:60px;top:50%;
+    transform:translateY(-50%);
+    width:45%;max-width:550px;
+    animation:float 6s ease-in-out infinite;
+  }
+  .hero-image img{
+    width:100%;height:auto;
+    border:8px solid var(--cream);
+    box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px var(--gold);
+  }
+  @keyframes float{
+    0%,100%{transform:translateY(-50%) rotate(-1deg)}
+    50%{transform:translateY(-53%) rotate(1deg)}
+  }
+
+  /* ===== Секции ===== */
+  section{padding:100px 60px}
+  .section-header{text-align:center;margin-bottom:70px}
+  .section-tag{
+    color:var(--gold);letter-spacing:4px;font-size:12px;
+    text-transform:uppercase;margin-bottom:15px;display:block;
+  }
+  .section-header h2{
+    font-size:clamp(36px,5vw,64px);
+    margin-bottom:20px;
+  }
+  .section-header p{color:var(--muted);max-width:600px;margin:0 auto}
+
+  /* ===== Фильтры ===== */
+  .filters{
+    display:flex;justify-content:center;gap:15px;
+    flex-wrap:wrap;margin-bottom:50px;
+  }
+  .filter-btn{
+    background:transparent;color:var(--text);
+    border:1px solid rgba(255,255,255,.15);
+    padding:10px 24px;cursor:pointer;
+    font-size:13px;letter-spacing:1.5px;text-transform:uppercase;
+    transition:all .3s;
+  }
+  .filter-btn:hover,.filter-btn.active{
+    background:var(--gold);color:var(--bg);border-color:var(--gold);
+  }
+
+  /* ===== Галерея ===== */
+  .gallery{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:30px;max-width:1400px;margin:0 auto;
+  }
+  .painting{
+    background:var(--bg-2);
+    border:1px solid rgba(212,175,55,.1);
+    overflow:hidden;cursor:pointer;
+    transition:transform .4s,box-shadow .4s;
+    position:relative;
+    animation:fadeInUp .6s ease both;
+  }
+  @keyframes fadeInUp{
+    from{opacity:0;transform:translateY(30px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+  .painting:hover{
+    transform:translateY(-10px);
+    box-shadow:0 25px 60px rgba(0,0,0,.5),0 0 0 1px var(--gold);
+  }
+  .painting-img{
+    width:100%;aspect-ratio:4/5;overflow:hidden;
+    position:relative;
+  }
+  .painting-img img{
+    width:100%;height:100%;object-fit:cover;
+    transition:transform .6s;
+  }
+  .painting:hover .painting-img img{transform:scale(1.08)}
+  .painting-badge{
+    position:absolute;top:15px;left:15px;
+    background:var(--wine);color:#fff;
+    padding:5px 12px;font-size:11px;
+    letter-spacing:1px;text-transform:uppercase;
+  }
+  .painting-info{padding:25px}
+  .painting-info h3{
+    font-size:22px;margin-bottom:8px;
+    color:var(--cream);
+  }
+  .painting-artist{
+    color:var(--gold-soft);font-size:13px;
+    letter-spacing:1px;margin-bottom:15px;
+    font-style:italic;
+  }
+  .painting-meta{
+    display:flex;justify-content:space-between;align-items:center;
+    padding-top:15px;border-top:1px solid rgba(255,255,255,.08);
+  }
+  .painting-price{
+    font-size:24px;font-weight:600;color:var(--gold);
+    font-family:'Playfair Display',serif;
+  }
+  .painting-size{color:var(--muted);font-size:13px}
+
+  /* ===== О художнике ===== */
+  .about{
+    background:linear-gradient(135deg,var(--bg-2),var(--bg));
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:80px;align-items:center;
+    max-width:1400px;margin:0 auto;
+  }
+  .about-img{
+    position:relative;
+  }
+  .about-img img{
+    width:100%;border:6px solid var(--cream);
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+  }
+  .about-img::before{
+    content:'';position:absolute;
+    top:-20px;left:-20px;right:20px;bottom:20px;
+    border:2px solid var(--gold);z-index:-1;
+  }
+  .about-text h2{font-size:48px;margin-bottom:25px}
+  .about-text p{color:var(--muted);margin-bottom:20px;font-size:16px}
+  .about-stats{
+    display:flex;gap:40px;margin-top:40px;
+    padding-top:30px;border-top:1px solid rgba(212,175,55,.2);
+  }
+  .stat-num{
+    font-family:'Playfair Display',serif;
+    font-size:42px;color:var(--gold);font-weight:700;
+  }
+  .stat-label{color:var(--muted);font-size:13px;letter-spacing:1px;text-transform:uppercase}
+
+  /* ===== Контакты ===== */
+  .contact{
+    background:
+      radial-gradient(ellipse at center,rgba(212,175,55,.08),transparent 70%),
+      var(--bg);
+    text-align:center;
+  }
+  .contact-form{
+    max-width:600px;margin:0 auto;
+    display:flex;flex-direction:column;gap:20px;
+  }
+  .contact-form input,.contact-form textarea{
+    background:var(--bg-2);border:1px solid rgba(212,175,55,.2);
+    color:var(--text);padding:16px 20px;
+    font-family:inherit;font-size:15px;
+    transition:border-color .3s;
+  }
+  .contact-form input:focus,.contact-form textarea:focus{
+    outline:none;border-color:var(--gold);
+  }
+  .contact-form textarea{min-height:140px;resize:vertical}
+
+  /* ===== Футер ===== */
+  footer{
+    background:#0a0907;
+    padding:50px 60px 30px;
+    border-top:1px solid rgba(212,175,55,.15);
+    text-align:center;
+  }
+  footer p{color:var(--muted);font-size:14px;margin-bottom:10px}
+  .socials{display:flex;justify-content:center;gap:20px;margin-bottom:25px}
+  .socials a{
+    width:44px;height:44px;
+    border:1px solid rgba(212,175,55,.3);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--gold);text-decoration:none;
+    transition:all .3s;
+  }
+  .socials a:hover{background:var(--gold);color:var(--bg)}
+
+  /* ===== Модалка ===== */
+  .modal{
+    position:fixed;inset:0;
+    background:rgba(0,0,0,.85);
+    backdrop-filter:blur(8px);
+    display:none;align-items:center;justify-content:center;
+    z-index:200;padding:20px;
+  }
+  .modal.active{display:flex;animation:fadeIn .3s}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  .modal-content{
+    background:var(--bg-2);
+    max-width:900px;width:100%;
+    max-height:90vh;overflow-y:auto;
+    display:grid;grid-template-columns:1fr 1fr;
+    border:1px solid var(--gold);
+    position:relative;
+  }
+  .modal-close{
+    position:absolute;top:15px;right:15px;
+    background:var(--bg);color:var(--gold);
+    width:40px;height:40px;border:1px solid var(--gold);
+    cursor:pointer;font-size:20px;z-index:5;
+    transition:all .3s;
+  }
+  .modal-close:hover{background:var(--gold);color:var(--bg)}
+  .modal-img img{width:100%;height:100%;object-fit:cover;min-height:400px}
+  .modal-info{padding:40px}
+  .modal-info h2{font-size:32px;margin-bottom:10px;color:var(--cream)}
+  .modal-info .artist{color:var(--gold);font-style:italic;margin-bottom:20px}
+  .modal-info .desc{color:var(--muted);margin-bottom:25px;line-height:1.7}
+  .modal-details{
+    border-top:1px solid rgba(212,175,55,.2);
+    padding-top:20px;margin-bottom:25px;
+  }
+  .modal-details div{
+    display:flex;justify-content:space-between;
+    padding:8px 0;font-size:14px;
+  }
+  .modal-details span:first-child{color:var(--muted)}
+  .modal-price{
+    font-family:'Playfair Display',serif;
+    font-size:38px;color:var(--gold);
+    margin-bottom:25px;
+  }
+
+  /* ===== Корзина ===== */
+  .cart-panel{
+    position:fixed;top:0;right:-450px;
+    width:420px;max-width:100vw;height:100vh;
+    background:var(--bg-2);
+    border-left:1px solid var(--gold);
+    z-index:150;transition:right .4s;
+    display:flex;flex-direction:column;
+    box-shadow:-20px 0 60px rgba(0,0,0,.5);
+  }
+  .cart-panel.active{right:0}
+  .cart-header{
+    padding:25px;border-bottom:1px solid rgba(212,175,55,.2);
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .cart-header h3{font-size:24px}
+  .cart-items{flex:1;overflow-y:auto;padding:20px}
+  .cart-item{
+    display:flex;gap:15px;padding:15px 0;
+    border-bottom:1px solid rgba(255,255,255,.05);
+  }
+  .cart-item img{width:70px;height:90px;object-fit:cover}
+  .cart-item-info{flex:1}
+  .cart-item-info h4{font-size:15px;margin-bottom:5px;color:var(--cream)}
+  .cart-item-info p{color:var(--gold);font-size:14px}
+  .cart-remove{
+    background:transparent;border:none;color:var(--muted);
+    cursor:pointer;font-size:18px;transition:color .3s;
+  }
+  .cart-remove:hover{color:var(--wine)}
+  .cart-footer{
+    padding:25px;border-top:1px solid rgba(212,175,55,.2);
+  }
+  .cart-total{
+    display:flex;justify-content:space-between;
+    margin-bottom:20px;font-size:18px;
+  }
+  .cart-total strong{color:var(--gold);font-family:'Playfair Display',serif;font-size:26px}
+  .cart-empty{text-align:center;color:var(--muted);padding:40px 20px}
+
+  /* ===== Toast ===== */
+  .toast{
+    position:fixed;bottom:30px;left:50%;
+    transform:translateX(-50%) translateY(100px);
+    background:var(--gold);color:var(--bg);
+    padding:15px 30px;font-weight:600;
+    letter-spacing:1px;z-index:300;
+    transition:transform .4s;
+    box-shadow:0 10px 30px rgba(0,0,0,.3);
+  }
+  .toast.show{transform:translateX(-50%) translateY(0)}
+
+  /* ===== Адаптив ===== */
+  @media(max-width:968px){
+    header{padding:15px 25px}
+    nav ul{display:none}
+    section,.hero{padding:80px 25px}
+    .hero-image{display:none}
+    .hero-content{max-width:100%}
+    .about{grid-template-columns:1fr;gap:40px}
+    .modal-content{grid-template-columns:1fr}
+    .modal-img img{max-height:300px}
+    .about-stats{flex-wrap:wrap;gap:20px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">ПАЛИТРА</div>
+  <nav>
+    <ul>
+      <li><a href="#home">Главная</a></li>
+      <li><a href="#gallery">Галерея</a></li>
+      <li><a href="#about">О нас</a></li>
+      <li><a href="#contact">Контакты</a></li>
+    </ul>
+  </nav>
+  <button class="cart-btn" onclick="toggleCart()">
+    Корзина <span class="cart-count" id="cartCount">0</span>
+  </button>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-content">
+    <span class="hero-tag">✦ Авторская живопись ✦</span>
+    <h1>Искусство, <span>рождённое</span> душой</h1>
+    <p>Откройте мир уникальных полотен от современных художников. Каждая картина — это история, эмоция и кусочек вечности в вашем доме.</p>
+    <div class="hero-buttons">
+      <button class="btn-primary" onclick="document.getElementById('gallery').scrollIntoView()">Смотреть галерею</button>
+      <button class="btn-ghost" onclick="document.getElementById('about').scrollIntoView()">О художниках</button>
+    </div>
+  </div>
+  <div class="hero-image">
+    <img src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=800" alt="Картина">
+  </div>
+</section>
+
+<!-- ГАЛЕРЕЯ -->
+<section id="gallery">
+  <div class="section-header">
+    <span class="section-tag">Коллекция</span>
+    <h2>Избранные работы</h2>
+    <p>Более 200 уникальных полотен в разных стилях — от классического реализма до современного абстракционизма</p>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" data-filter="all">Все работы</button>
+    <button class="filter-btn" data-filter="abstract">Абстракция</button>
+    <button class="filter-btn" data-filter="landscape">Пейзажи</button>
+    <button class="filter-btn" data-filter="portrait">Портреты</button>
+    <button class="filter-btn" data-filter="modern">Модерн</button>
+  </div>
+
+  <div class="gallery" id="galleryGrid"></div>
+</section>
+
+<!-- О ХУДОЖНИКЕ -->
+<section id="about">
+  <div class="about">
+    <div class="about-img">
+      <img src="https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=700" alt="Художник">
+    </div>
+    <div class="about-text">
+      <span class="section-tag">О галерее</span>
+      <h2>Где рождается искусство</h2>
+      <p>Галерея «Палитра» — это пространство, где встречаются талантливые художники и ценители прекрасного. Мы тщательно отбираем каждую работу, чтобы в ваш дом попало настоящее искусство.</p>
+      <p>Наши мастера — это признанные авторы с многолетним опытом и молодые таланты, чьи работы уже украшают частные коллекции в 15 странах мира.</p>
+      <div class="about-stats">
+        <div>
+          <div class="stat-num">200+</div>
+          <div class="stat-label">Картин</div>
+        </div>
+        <div>
+          <div class="stat-num">45</div>
+          <div class="stat-label">Художников</div>
+        </div>
+        <div>
+          <div class="stat-num">15</div>
+          <div class="stat-label">Стран</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- КОНТАКТЫ -->
+<section id="contact" class="contact">
+  <div class="section-header">
+    <span class="section-tag">Связаться</span>
+    <h2>Закажите консультацию</h2>
+    <p>Не можете определиться с выбором? Наши эксперты помогут подобрать идеальную картину для вашего интерьера</p>
+  </div>
+  <form class="contact-form" onsubmit="submitForm(event)">
+    <input type="text" placeholder="Ваше имя" required>
+    <input type="email" placeholder="Email" required>
+    <input type="tel" placeholder="Телефон">
+    <textarea placeholder="Расскажите, какую картину вы ищете..."></textarea>
+    <button type="submit" class="btn-primary">Отправить заявку</button>
+  </form>
+</section>
+
+<!-- ФУТЕР -->
+<footer>
+  <div class="socials">
+    <a href="#" title="Instagram">IG</a>
+    <a href="#" title="Facebook">FB</a>
+    <a href="#" title="Pinterest">PT</a>
+    <a href="#" title="Telegram">TG</a>
+  </div>
+  <p>© 2026 Галерея «Палитра». Все права защищены.</p>
+  <p style="font-size:12px;margin-top:10px">Москва, ул. Арбат, 15 · +7 (495) 123-45-67 · hello@palitra.art</p>
+</footer>
+
+<!-- МОДАЛКА -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-img"><img id="modalImg" src="" alt=""></div>
+    <div class="modal-info">
+      <h2 id="modalTitle"></h2>
+      <p class="artist" id="modalArtist"></p>
+      <p class="desc" id="modalDesc"></p>
+      <div class="modal-details">
+        <div><span>Размер:</span><span id="modalSize"></span></div>
+        <div><span>Техника:</span><span id="modalTech"></span></div>
+        <div><span>Год:</span><span id="modalYear"></span></div>
+      </div>
+      <div class="modal-price" id="modalPrice"></div>
+      <button class="btn-primary" style="width:100%" id="modalBuy">В корзину</button>
+    </div>
+  </div>
+</div>
+
+<!-- КОРЗИНА -->
+<div class="cart-panel" id="cartPanel">
+  <div class="cart-header">
+    <h3>Ваша корзина</h3>
+    <button class="modal-close" style="position:static;width:36px;height:36px" onclick="toggleCart()">×</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span>Итого:</span>
+      <strong id="cartTotal">0 ₽</strong>
+    </div>
+    <button class="btn-primary" style="width:100%" onclick="checkout()">Оформить заказ</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">Добавлено в корзину</div>
+
+<script>
+// Данные картин
+const paintings = [
+  {id:1,title:"Закат над морем",artist:"Анна Соколова",cat:"landscape",price:85000,size:"80×60 см",tech:"Масло, холст",year:"2024",img:"https://images.unsplash.com/photo-1549490349-8643362247b5?w=600",desc:"Яркое полотно, передающее атмосферу тёплого летнего вечера. Золотые и пурпурные оттенки создают ощущение умиротворения."},
+  {id:2,title:"Абстрактная симфония",artist:"Дмитрий Волков",cat:"abstract",price:120000,size:"100×100 см",tech:"Акрил, холст",year:"2025",img:"https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=600",desc:"Динамичная композиция, в которой переплетаются эмоции и цвета. Каждая деталь несёт свой смысл."},
+  {id:3,title:"Портрет незнакомки",artist:"Елена Морозова",cat:"portrait",price:150000,size:"70×90 см",tech:"Масло, холст",year:"2024",img:"https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=600",desc:"Загадочный образ, созданный в классической технике. Тонкая работа с деталями и светотенью."},
+  {id:4,title:"Городские огни",artist:"Максим Петров",cat:"modern",price:95000,size:"90×60 см",tech:"Смешанная техника",year:"2025",img:"https://images.unsplash.com/photo-1574182245530-967d9b3831af?w=600",desc:"Энергичная городская сцена, полная движения и света. Современное прочтение урбанистического пейзажа."},
+  {id:5,title:"Весенний сад",artist:"Ольга Лебедева",cat:"landscape",price:72000,size:"60×80 см",tech:"Масло, холст",year:"2024",img:"https://images.unsplash.com/photo-1578926288207-a90a5366759d?w=600",desc:"Нежное полотно, наполненное ароматом цветущего сада. Идеально для светлого интерьера."},
+  {id:6,title:"Геометрия чувств",artist:"Игорь Смирнов",cat:"abstract",price:110000,size:"80×80 см",tech:"Акрил, холст",year:"2025",img:"https://images.unsplash.com/photo-1552084117-56a987666449?w=600",desc:"Строгая геометрия форм в сочетании с мягкими цветовыми переходами создаёт уникальный визуальный опыт."},
+  {id:7,title:"Танцовщица",artist:"Виктория Кузнецова",cat:"portrait",price:135000,size:"70×100 см",tech:"Масло, холст",year:"2024",img:"https://images.unsplash.com/photo-1536924430914-91f9e2041b83?w=600",desc:"Выразительный портрет, запечатлевший мгновение грации и движения. Работа в традициях импрессионизма."},
+  {id:8,title:"Неоновый ритм",artist:"Артём Новиков",cat:"modern",price:88000,size:"100×70 см",tech:"Акрил, холст",year:"2025",img:"https://images.unsplash.com/photo-1579783928621-7a13d66a62d1?w=600",desc:"Яркое современное полотно, вдохновлённое эстетикой ночного города и цифрового искусства."},
+  {id:9,title:"Горное озеро",artist:"Сергей Иванов",cat:"landscape",price:98000,size:"90×60 см",tech:"Масло, холст",year:"2024",img:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600",desc:"Величественный пейзаж с зеркальной гладью озера и заснеженными вершинами. Картина-медитация."},
+  {id:10,title:"Цветочная абстракция",artist:"Мария Белова",cat:"abstract",price:65000,size:"60×60 см",tech:"Акварель, бумага",year:"2025",img:"https://images.unsplash.com/photo-1579783901586-d88db74b4fe4?w=600",desc:"Лёгкая и воздушная работа, напоминающая о весеннем цветении. Нежные пастельные тона."},
+  {id:11,title:"Мужской портрет",artist:"Павел Орлов",cat:"portrait",price:145000,size:"80×100 см",tech:"Масло, холст",year:"2024",img:"https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600",desc:"Глубокий психологический портрет, раскрывающий характер и внутренний мир героя."},
+  {id:12,title:"Космическая соната",artist:"Николай Зайцев",cat:"modern",price:125000,size:"120×80 см",tech:"Смешанная техника",year:"2025",img:"https://images.unsplash.com/photo-1534224039826-c7a0eda0e6b3?w=600",desc:"Масштабное полотно, вдохновлённое космическими просторами. Идеально для просторных помещений."}
+];
+
+const grid = document.getElementById('galleryGrid');
+let cart = JSON.parse(localStorage.getItem('cart')||'[]');
+
+function renderGallery(filter='all'){
+  grid.innerHTML = '';
+  const items = filter==='all'?paintings:paintings.filter(p=>p.cat===filter);
+  items.forEach((p,i)=>{
+    const el = document.createElement('div');
+    el.className = 'painting';
+    el.style.animationDelay = (i*0.05)+'s';
+    el.innerHTML = `
+      <div class="painting-img">
+        <img src="${p.img}" alt="${p.title}" loading="lazy">
+        ${p.price>100000?'<div class="painting-badge">Премиум</div>':''}
+      </div>
+      <div class="painting-info">
+        <h3>${p.title}</h3>
+        <div class="painting-artist">${p.artist}</div>
+        <div class="painting-meta">
+          <div class="painting-price">${p.price.toLocaleString('ru')} ₽</div>
+          <div class="painting-size">${p.size}</div>
+        </div>
+      </div>`;
+    el.onclick = ()=>openModal(p);
+    grid.appendChild(el);
+  });
+}
+
+// Фильтры
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderGallery(btn.dataset.filter);
+  };
+});
+
+// Модалка
+function openModal(p){
+  document.getElementById('modalImg').src = p.img;
+  document.getElementById('modalTitle').textContent = p.title;
+  document.getElementById('modalArtist').textContent = p.artist;
+  document.getElementById('modalDesc').textContent = p.desc;
+  document.getElementById('modalSize').textContent = p.size;
+  document.getElementById('modalTech').textContent = p.tech;
+  document.getElementById('modalYear').textContent = p.year;
+  document.getElementById('modalPrice').textContent = p.price.toLocaleString('ru')+' ₽';
+  document.getElementById('modalBuy').onclick = ()=>{addToCart(p);closeModal()};
+  document.getElementById('modal').classList.add('active');
+}
+function closeModal(){document.getElementById('modal').classList.remove('active')}
+document.getElementById('modal').onclick = e=>{
+  if(e.target.id==='modal')closeModal();
+};
+
+// Корзина
+function addToCart(p){
+  if(!cart.find(x=>x.id===p.id)){
+    cart.push(p);
+    saveCart();
+    showToast('«'+p.title+'» добавлена в корзину');
+  } else {
+    showToast('Уже в корзине');
+  }
+}
+function removeFromCart(id){
+  cart = cart.filter(x=>x.id!==id);
+  saveCart();
+}
+function saveCart(){
+  localStorage.setItem('cart',JSON.stringify(cart));
+  renderCart();
+}
+function renderCart(){
+  const items = document.getElementById('cartItems');
+  const count = document.getElementById('cartCount');
+  const total = document.getElementById('cartTotal');
+  count.textContent = cart.length;
+  if(cart.length===0){
+    items.innerHTML = '<div class="cart-empty">Корзина пуста<br><br>Добавьте картины из галереи</div>';
+  } else {
+    items.innerHTML = cart.map(p=>`
+      <div class="cart-item">
+        <img src="${p.img}" alt="">
+        <div class="cart-item-info">
+          <h4>${p.title}</h4>
+          <p>${p.artist}</p>
+          <p><strong>${p.price.toLocaleString('ru')} ₽</strong></p>
+        </div>
+        <button class="cart-remove" onclick="removeFromCart(${p.id})">×</button>
+      </div>`).join('');
+  }
+  const sum = cart.reduce((s,p)=>s+p.price,0);
+  total.textContent = sum.toLocaleString('ru')+' ₽';
+}
+function toggleCart(){document.getElementById('cartPanel').classList.toggle('active')}
+function checkout(){
+  if(cart.length===0){showToast('Корзина пуста');return}
+  showToast('Заказ оформлен! Мы свяжемся с вами');
+  cart = [];saveCart();toggleCart();
+}
+
+// Форма
+function submitForm(e){
+  e.preventDefault();
+  showToast('Заявка отправлена! Спасибо');
+  e.target.reset();
+}
+
+// Toast
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// Инициализация
+renderGallery();
+renderCart();
+
+// Закрытие корзины по клику вне
+document.addEventListener('click',e=>{
+  const panel = document.getElementById('cartPanel');
+  const btn = document.querySelector('.cart-btn');
+  if(panel.classList.contains('active') && !panel.contains(e.target) && !btn.contains(e.target)){
+    panel.classList.remove('active');
+  }
+});
+</script>
+</body>
+</html>
